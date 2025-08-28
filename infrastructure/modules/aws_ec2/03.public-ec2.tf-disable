@@ -1,0 +1,34 @@
+resource "aws_instance" "public-ec2a" {
+  ami                    = "ami-00ca32bbc84273381"
+  instance_type          = "t3.micro"
+  key_name               = "tf-key"
+  vpc_security_group_ids = [var.nsg-pub-ec2]
+  subnet_id              = var.mypublicsubnet_1a
+  user_data = <<-EOF
+             #!/bin/bash
+             sudo yum install httpd -y
+             sudo echo "This is Production web server" > /var/www/html/index.html
+             sudo systemctl enable --now httpd
+             EOF
+  tags = {
+    Name = "public-ec2a"
+  }
+}
+
+resource "aws_instance" "public-ec2b" {
+  ami                    = "ami-00ca32bbc84273381"
+  instance_type          = "t3.micro"
+  key_name               = "tf-key"
+  vpc_security_group_ids = [var.nsg-pub-ec2]
+  subnet_id              = var.mypublicsubnet_1b
+  user_data = <<-EOF
+             #!/bin/bash
+             sudo yum install httpd -y
+             sudo mkdir /var/www/html/staging
+             sudo echo "This is Testing web server" > /var/www/html/staging/index.html
+             sudo systemctl enable --now httpd
+             EOF
+  tags = {
+    Name = "public-ec2b"
+  }
+}
